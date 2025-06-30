@@ -1,4 +1,5 @@
 from controller.database import db
+from datetime import datetime
 
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -18,6 +19,10 @@ class ParkingLot(db.Model):
     price_per_hour = db.Column(db.Float)
     max_spots = db.Column(db.Integer)
     spots = db.relationship('ParkingSpot', backref='lot', cascade="all, delete")
+    def available_spots(self):
+        return sum(1 for spot in self.spots if spot.status == 'A')
+    def occupied_spots(self):
+        return sum(1 for spot in self.spots if spot.status == 'O')
 
 class ParkingSpot(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -32,3 +37,11 @@ class Reservation(db.Model):
     start_time = db.Column(db.DateTime)
     end_time = db.Column(db.DateTime, nullable=True)
     cost = db.Column(db.Float, nullable=True)
+
+    def estimated_cost(self):
+        if not self.start_time or not self.spot or not self.spot.lot:
+            return 0
+        price_per_hour = self.spot.lot.price_per_hour
+        end = self.end_time if self.end_time else datetime.now()
+        duration_hours = (end - self.start_time).total_seconds() / 3600
+        return round(duration_hours * price_per_hour, 2)

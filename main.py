@@ -22,5 +22,9 @@ with app.app_context():
             db.session.add(admin)
             db.session.commit()
 
+from controller.auth_routes import *
+from controller.routes import *
+
+
 if __name__ == '__main__':
     app.run(debug=True)

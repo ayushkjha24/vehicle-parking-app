@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+{% block title %}Home{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h1 class="text-center">Welcome {{ context['name'] }}!</h1>
+    <div>
+      {% if session['role'] == 'admin' %}
+        {% include 'admin_dashboard.html' %}
+      {% elif session['role'] == 'user' %}
+        {% include 'user_dashboard.html'   %}
+      {% else %}
+        <p class="text-center">You are browsing as a guest.</p>
+      {% endif %}
+    </div>
+{% endblock %}

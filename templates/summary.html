@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+
+{% block title %}Summary{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h1 class="text-center">Parking Lot Summary</h1>
+    <div class="row">
+        <div class="col-md-12">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Parking Lot ID</th>
+                        <th>Location</th>
+                        <th>Total Spots</th>
+                        <th>Occupied Spots</th>
+                        <th>Available Spots</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for lot in context['lots'] %}
+                    <tr>
+                        <td>{{ lot.id }}</td>
+                        <td>{{ lot.address }}</td>
+                        <td>{{ lot.max_spots }}</td>
+                        <td>{{ lot.occupied_spots() }}</td>
+                        <td>{{ lot.available_spots() }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}
