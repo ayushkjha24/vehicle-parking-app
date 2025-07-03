@@ -1,0 +1,77 @@
+<div class="container-fluid mt-2 border-radius-3 p-5">
+    {% if context['search_query'] %}
+    <h1 class="text-center">Parking Lot @ {{ context['search_query'] }}</h1> 
+    {% else %}  
+    <h1 class="text-center">Available Parking Lot</h1>
+    {% endif %}
+    <div class="row">
+        <div class="col-md-12">
+            <table class="table table-striped border border-secondary">
+                <thead>
+                    <tr>
+                        <th scope="col">ID</th>
+                        <th scope="col">Location</th>
+                        <th scope="col">Availability</th>
+                        <th scope="col">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for lot in context['lots'] %}
+                    <tr>
+                        <td>{{ lot.id }}</td>
+                        <td>{{ lot.address }}</td>
+                        <td>{{ lot.available_spots() }}</td>
+                        <td>
+                            <button class="btn btn-primary" data-bs-toggle="modal"
+                                data-bs-target="#BookSpotModal{{ lot.id }}">Book</button>
+                        </td>
+                    </tr>
+                    <div class="modal fade" id="BookSpotModal{{ lot.id }}" tabindex="-1"
+                        aria-labelledby="BookSpotModalLabel{{ lot.id }}" aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <form method="POST" action="{{ url_for('book_spot', lot_id=lot.id) }}">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="BookSpotModalLabel{{ lot.id }}">Book Parking Spot
+                                        </h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                            aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <div class="mb-3">
+                                            <label for="lotName{{ lot.id }}" class="form-label">Lot Id</label>
+                                            <input type="text" class="form-control" id="lotName{{ lot.id }}"
+                                                name="lotname" value="{{ lot.id }}" readonly>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="spotId{{ lot.id }}" class="form-label">Spot Id</label>
+                                            <input type="text" class="form-control" id="spotId{{ lot.id }}"
+                                                name="spot_id" value="{{ lot.get_available_spot().id }}" readonly>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="location{{ lot.id }}" class="form-label">Location</label>
+                                            <textarea class="form-control" id="location{{ lot.id }}" name="address"
+                                                rows="3" readonly>{{ lot.address }}</textarea>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="VehicleNo{{ lot.id }}" class="form-label">Vehicle No.</label>
+                                            <input type="text" class="form-control border border-secondary"
+                                                id="VehicleNo{{ lot.id }}" name="vehicle_number" placeholder="xxxxxx"
+                                                min="1" required>
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary"
+                                            data-bs-dismiss="modal">Cancel</button>
+                                        <button type="submit" class="btn btn-primary">Reserve</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

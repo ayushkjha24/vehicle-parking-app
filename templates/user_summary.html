@@ -1,0 +1,68 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container mt-5">
+    <h1 class="text-center mb-4">User Summary</h1>
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="text-center">User Details</h2>
+                </div>
+                <div class="card-body">
+                    <p><strong>Name : </strong> {{ context.user.name }}</p>
+                    <p><strong>Email : </strong> {{ context.user.email }}</p>
+                    <p><strong>Address : </strong> {{ context.user.address }}</p>
+                    <p><strong>Pincode : </strong> {{ context.user.pincode }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row justify-content-center mt-4">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="text-center">Reservations</h2>
+                </div>
+                <div class="card-body">
+                    {% if context.reservations %}
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Location</th>
+                                <th>Vehicle No.</th>
+                                <th>Start Time</th>
+                                <th>End Time</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for reservation in context.reservations %}
+                            <tr>
+                                <td>{{ reservation.id }}</td>
+                                <td>{{ reservation.location() }}</td>
+                                <td>{{ reservation.vehicle_number }}</td>
+                                <td>{{ reservation.get_start_time() }}</td>
+                                <td>{{ reservation.get_end_time() }}</td>
+                                <td>
+                                    {% if reservation.get_spot_status() == 'O' %}
+                                    Occupied
+                                    {% elif reservation.get_spot_status() == 'B' %}
+                                    Booked
+                                    {% else %}
+                                    Available
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                    {% else %}
+                    <p class="text-center">No reservations found.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock content %}

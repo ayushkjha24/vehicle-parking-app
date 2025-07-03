@@ -56,6 +56,8 @@ def register():
     elif request.method == 'POST':
         name = request.form.get('name', None)
         email = request.form.get('email', None)
+        address = request.form.get('address', None)
+        pincode = request.form.get('pincode', None)
         password = request.form.get('password', None)
         confirm_password = request.form.get('password2', None)
 
@@ -71,7 +73,7 @@ def register():
             flash('Email already registered', 'danger')
             return redirect(url_for('register'))
 
-        new_user = User(name=name, email=email, password=password, role='user')
+        new_user = User(name=name, email=email,address=address,pincode=pincode, password=password, role='user')
         db.session.add(new_user)
         db.session.commit()
 

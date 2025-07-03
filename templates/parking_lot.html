@@ -19,10 +19,13 @@
             {% if spot.status == 'A' %}
             <button data-bs-toggle="modal" data-bs-target="#ViewDeleteSpotModal{{spot.id}}"
               class="btn btn-success m-1">{{ spot.status }}</button>
-            {% else %}
+            {% elif spot.status == 'B' %}
             <!-- Occupied spot button (O) -->
             <button data-bs-toggle="modal" data-bs-target="#ViewDeleteSpotModal{{spot.id}}"
               class="btn btn-warning m-1">{{ spot.status }}</button>
+            {% else %}
+            <button data-bs-toggle="modal" data-bs-target="#ViewDeleteSpotModal{{spot.id}}"
+              class="btn btn-danger m-1">{{ spot.status }}</button>
             {% endif %}
             {% endfor %}
           </div>
@@ -117,7 +120,7 @@
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
           <div class="modal-body">
-            <p><strong>Spot ID : </strong> {{ spot.reservation.spot_id}}</p>
+            <p><strong>Spot ID : </strong> {{ spot.reservation.spot_id }}</p>
             <p><strong>Customer ID : </strong> {{ spot.reservation.user_id }}</p>
             <p><strong>Vehicle No : </strong> {{ spot.reservation.user_id }}</p>
             <p><strong>Date/Time of Parking : </strong> {{ spot.reservation.start_time }}</p>
@@ -135,6 +138,6 @@
       </div>
     </div>
     {% endfor %}
-    {% endfor %}
+  {% endfor %}
   </div>
 </div>

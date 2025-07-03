@@ -1,0 +1,39 @@
+<div class="container mt-5">
+    <h1 class="text-center">All Parkings</h1>
+    <div class="row">
+        <div class="col-md-12">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Reservation ID</th>
+                        <th>User Name</th>
+                        <th>Vehicle Number</th>
+                        <th>Parking Spot</th>
+                        <th>Start Time</th>
+                        <th>End Time</th>
+                        <th>Duration (hours)</th>
+                        <th>Estimated Cost</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for reservation in context.Reservations %}
+                    <tr>
+                        <td>{{ reservation.id }}</td>
+                        <td>{{ reservation.user_id }}</td>
+                        <td>{{ reservation.vehicle_number }}</td>
+                        <td>{{ reservation.spot_id }}</td>
+                        <td>{{ reservation.start_time }}</td>
+                        <td>{{ reservation.end_time }}</td>
+                        <td>{{ reservation.get_duration() }}</td>
+                        <td>{{ reservation.estimated_cost() }}</td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="6">No reservations found.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

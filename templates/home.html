@@ -3,7 +3,7 @@
 
 {% block content %}
 <div class="container mt-5">
-    <h1 class="text-center">Welcome {{ context['name'] }}!</h1>
+    <h1 class="text-center">Welcome {% if context['name'] %}{{ context['name'] }}{% endif %}!</h1>
     <div>
       {% if session['role'] == 'admin' %}
         {% include 'admin_dashboard.html' %}
@@ -12,5 +12,6 @@
       {% else %}
         <p class="text-center">You are browsing as a guest.</p>
       {% endif %}
+      {% include 'parkings.html' %}
     </div>
 {% endblock %}
