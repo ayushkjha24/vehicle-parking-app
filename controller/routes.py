@@ -2,6 +2,9 @@ from main import app
 from flask import render_template, request, redirect, url_for, flash, session
 from controller.models import *
 from datetime import datetime
+import matplotlib
+matplotlib.use('Agg')
+from matplotlib import pyplot as plt
 
 @app.route('/')
 def home():
@@ -170,11 +173,37 @@ def summary():
     total_parking_lots = ParkingLot.query.count()
     total_reservations = Reservation.query.count()
     lots = ParkingLot.query.all()
+
+    lot_names = [lot.name for lot in lots]
+    available_spots = [lot.available_spots() for lot in lots]
+    occupied_spots = [lot.occupied_spots() for lot in lots]
+
+    # Stacked bar chart
+    import numpy as np
+    x = np.arange(len(lots))
+    width = 0.5
+
+    plt.figure(figsize=(10, 6))
+    plt.bar(x, available_spots, width, label='Available', color='green')
+    plt.bar(x, occupied_spots, width, bottom=available_spots, label='Occupied', color='red')
+    plt.xlabel('Parking Lot')
+    plt.ylabel('Number of Spots')
+    plt.title('Available vs Occupied Spots per Parking Lot')
+    plt.xticks(x, lot_names, rotation=45, ha='right')
+    plt.legend()
+    plt.tight_layout()
+    bar_chart_path = 'static/stacked_bar_lots.png'
+    plt.savefig(bar_chart_path)
+    plt.clf()
+
     context = {
         'title': 'Summary',
-        'lots': lots
+        'lots': lots,
+        'bar_chart': bar_chart_path,
+        'total_users': total_users,
+        'total_parking_lots': total_parking_lots,
+        'total_reservations': total_reservations,
     }
-    
     return render_template('summary.html', context=context)
 
 @app.route('/search_parking', methods=['GET'])
@@ -193,12 +222,24 @@ def search_parking():
     if not lots:
         flash('No parking lots found for the given search query.', 'info')
     
+    user_email = session.get('email', None)
+    user_name = None
+    if user_email:
+        user = User.query.filter_by(email=user_email).first()
+        if user:
+            user_name = user.name
+            reservations = Reservation.query.filter_by(user_id=user.id).order_by(Reservation.start_time.desc())
+    else:
+        reservations = None
+        user_name = None
     context = {
         'title': 'Search Results',
         'lots': lots,
-        'search_query': search_query
+        'search_query': search_query,
+        'name': user_name,
+        'reservations': reservations,
+        'dateTime': datetime.now().strftime("%Y-%m-%d %H:%M")
     }
-    
     return render_template('home.html', context=context)
 
 @app.route('/book_spot/<int:lot_id>', methods=['POST'])
@@ -241,7 +282,7 @@ def change_status(reservation_id):
             flash('Parking spot released successfully!', 'success')
         else:
             reservation.spot.status = 'O'  # Mark the spot as occupied
-            reservation.start_time = datetime.now()
+            # reservation.start_time = datetime.now() >> Error in in the initial logic
             reservation.cost = None
             db.session.commit()
             flash('Parking spot occupied successfully!', 'success')
@@ -259,11 +300,23 @@ def user_summary():
         flash('User not found.', 'danger')
         return redirect(url_for('home'))
     
+    L=[]
     reservations = Reservation.query.filter_by(user_id=user.id).all()
+    for reservation in reservations:
+        L.append(reservation.estimated_cost())
+    print(L)
+    histogram = plt.hist(L,bins=10,histtype='barstacked', color='blue', alpha=0.7)
+    plt.title('Cost Distribution of Reservations')
+    plt.xlabel('Cost')
+    plt.ylabel('Frequency')
+    plt.grid(axis='y', alpha=0.75)
+    fileName = f'static/histogram_{user.id}.png'
+    plt.savefig(fileName)
     context = {
         'title': 'User Summary',
         'user': user,
-        'reservations': reservations
+        'reservations': reservations,
+        'histogram_image': fileName,
     }
     
     return render_template('user_summary.html', context=context)

@@ -18,7 +18,7 @@
         </div>
     </div>
     <div class="row justify-content-center mt-4">
-        <div class="col-md-8">
+        <div class="col-md-10">
             <div class="card">
                 <div class="card-header">
                     <h2 class="text-center">Reservations</h2>
@@ -31,8 +31,9 @@
                                 <th>ID</th>
                                 <th>Location</th>
                                 <th>Vehicle No.</th>
-                                <th>Start Time</th>
-                                <th>End Time</th>
+                                <th>Booking Time</th>
+                                <th>Release Time</th>
+                                <th>Total Cost</th>
                                 <th>Status</th>
                             </tr>
                         </thead>
@@ -44,13 +45,14 @@
                                 <td>{{ reservation.vehicle_number }}</td>
                                 <td>{{ reservation.get_start_time() }}</td>
                                 <td>{{ reservation.get_end_time() }}</td>
+                                <td>{{ reservation.estimated_cost() }}</td>
                                 <td>
                                     {% if reservation.get_spot_status() == 'O' %}
                                     Occupied
                                     {% elif reservation.get_spot_status() == 'B' %}
                                     Booked
                                     {% else %}
-                                    Available
+                                    Parked Out
                                     {% endif %}
                                 </td>
                             </tr>
@@ -64,5 +66,21 @@
             </div>
         </div>
     </div>
+    <div class="row justify-content-center mt-4">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="text-center">Reservation Histogram</h2>
+                </div>
+                <div class="card-body text-center">
+                    {% if context.histogram_image %}
+                    <img src="/{{ context.histogram_image }}" alt="Reservation Histogram"
+                        class="img-fluid">
+                    {% else %}
+                    <p>No histogram available.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
 </div>
 {% endblock content %}
