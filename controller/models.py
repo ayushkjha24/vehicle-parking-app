@@ -42,8 +42,9 @@ class Reservation(db.Model):
     vehicle_number = db.Column(db.String(20), nullable=False)
     start_time = db.Column(db.DateTime)
     end_time = db.Column(db.DateTime, nullable=True)
-    cost = db.Column(db.Float, nullable=True)
+    cost = db.Column(db.Float, nullable=True) # Cost of the reservation
 
+    # calculateing estimated cost based on start time, end time, and spot's lot price
     def estimated_cost(self):
         if not self.start_time or not self.spot or not self.spot.lot:
             return 0

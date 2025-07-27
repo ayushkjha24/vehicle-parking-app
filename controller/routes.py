@@ -277,13 +277,13 @@ def change_status(reservation_id):
         if request.form.get('status') == 'A':
             reservation.spot.status = 'A'  # Mark the spot as available
             reservation.end_time = datetime.now()
-            reservation.cost = reservation.estimated_cost()
+            reservation.cost = reservation.estimated_cost() # calculating cost when releasing the spot
             db.session.commit()
             flash('Parking spot released successfully!', 'success')
         else:
             reservation.spot.status = 'O'  # Mark the spot as occupied
             # reservation.start_time = datetime.now() >> Error in in the initial logic
-            reservation.cost = None
+            reservation.cost = None  # Initially cost is None when occupied
             db.session.commit()
             flash('Parking spot occupied successfully!', 'success')
         return redirect(url_for('home'))
