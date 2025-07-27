@@ -152,16 +152,20 @@ def delete_parking_spot(spot_id):
 @app.route('/search', methods=['GET', 'POST'])
 def search():
     if request.method == 'POST':
-        query = request.form.get('query')
+        location = request.form.get('location')
+        pincode = request.form.get('pincode')
         lots = ParkingLot.query.filter(
-            (ParkingLot.name.ilike(f'%{query}%')) |
-            (ParkingLot.address.ilike(f'%{query}%')) |
-            (ParkingLot.pincode.ilike(f'%{query}%'))
+            (ParkingLot.address.ilike(f'%{location}%')) |
+            (ParkingLot.pincode.ilike(f'%{pincode}%'))
         ).all()
-        return render_template('search.html', context=lots, query=query)
+        context = {
+            'title': 'Search Results',
+            'lots': lots,
+        }
+        return render_template('search.html', context=context)
     else:
         # If GET request, just render the search page without results
-        return render_template('search.html', context='Search Parking Lots')
+        return render_template('search.html', context={'title': 'Search Parking Lots', 'lots': []})
     
 @app.route('/summary', methods=['GET'])
 def summary():

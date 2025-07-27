@@ -5,7 +5,7 @@
 {% block content %}
 <div class="container mt-5">
     <h1 class="text-center">Search Parking Lots</h1>
-    <form class="mb-4">
+    <form class="mb-4" method="POST" action="{{ url_for('search') }}">
         <div class="row">
             <div class="col-md-4">
                 <input type="text" class="form-control" name="location" placeholder="Enter location" required>
@@ -18,5 +18,21 @@
             </div>
         </div>
     </form>
+    {% if context['lots'] %}
+    <div class="row">
+        {% for lot in context['lots'] %}
+        <div class="col-md-4 mb-4">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">{{ lot.name }}</h5>
+                    <p class="card-text"><strong>Location :</strong> {{ lot.address }}</p>
+                    <p class="card-text"><strong>Pin Code :</strong> {{ lot.pincode }}</p>
+                    <p class="card-text"><strong>Price :</strong> ₹{{ lot.price_per_hour }} per hour</p>
+                    <p class="card-text"><strong>Available Spots :</strong> ₹{{ lot.get_available_spot() }}</p>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    {% endif %}
 </div>
 {% endblock %}
