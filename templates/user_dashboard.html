@@ -19,11 +19,11 @@
                         <td>{{ reservation.id }}</td>
                         <td>{{ reservation.location() }}</td>
                         <td>{{ reservation.vehicle_number }}</td>
-                        {% if reservation.get_spot_status() == 'O' %}
+                        {% if reservation.status == 'Occupied' %}
                         <td>{{ reservation.get_start_time() }}</td>
                         <td><button class="btn btn-danger" data-bs-toggle="modal"
                                 data-bs-target="#changeStatusModal{{ reservation.id }}">Occupied</button></td>
-                        {% elif reservation.get_spot_status() == 'B' %}
+                        {% elif reservation.status == 'Booked' %}
                         <td>{{ reservation.get_start_time() }}</td>
                         <td><button class="btn btn-warning" data-bs-toggle="modal"
                                 data-bs-target="#changeStatusModal{{ reservation.id }}">Booked</button></td>
