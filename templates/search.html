@@ -3,36 +3,49 @@
 {% block title %}Search{% endblock %}
 
 {% block content %}
-<div class="container mt-5">
-    <h1 class="text-center">Search Parking Lots</h1>
-    <form class="mb-4" method="POST" action="{{ url_for('search') }}">
-        <div class="row">
-            <div class="col-md-4">
-                <input type="text" class="form-control" name="location" placeholder="Enter location" required>
-            </div>
-            <div class="col-md-4">
-                <input type="number" class="form-control" name="pincode" placeholder="Enter pin code" min="1" required>
-            </div>
-            <div class="col-md-4">
-                <button type="submit" class="btn btn-primary w-100">Search</button>
-            </div>
+<div class="container py-4">
+    <h2 class="fw-bold mb-4"><i class="fas fa-search me-2"></i>Search Parking Lots</h2>
+    <form class="row g-3 mb-4" method="post" action="{{ url_for('search') }}">
+        <div class="col-md-8">
+            <input type="text" class="form-control" name="search_query" placeholder="Search by Area Name or Pincode">
+        </div>
+        <div class="col-md-4">
+            <button type="submit" class="btn btn-primary w-100">
+                <i class="fas fa-search me-1"></i>Search
+            </button>
         </div>
     </form>
-    {% if context['lots'] %}
-    <div class="row">
-        {% for lot in context['lots'] %}
-        <div class="col-md-4 mb-4">
-            <div class="card">
-                <div class="card-body">
-                    <h5 class="card-title">{{ lot.name }}</h5>
-                    <p class="card-text"><strong>Location :</strong> {{ lot.address }}</p>
-                    <p class="card-text"><strong>Pin Code :</strong> {{ lot.pincode }}</p>
-                    <p class="card-text"><strong>Price :</strong> ₹{{ lot.price_per_hour }} per hour</p>
-                    <p class="card-text"><strong>Available Spots :</strong> ₹{{ lot.get_available_spot() }}</p>
-                </div>
+    <div class="card shadow-sm">
+        <div class="card-body">
+            {% if context.lots %}
+            <div class="table-responsive">
+                <table class="table table-hover align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Name</th>
+                            <th>Address</th>
+                            <th>Pincode</th>
+                            <th>Price/hr</th>
+                            <th>Available Spots</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for lot in context.lots %}
+                        <tr>
+                            <td>{{ lot.name }}</td>
+                            <td>{{ lot.address }}</td>
+                            <td>{{ lot.pincode }}</td>
+                            <td>₹{{ lot.price_per_hour }}</td>
+                            <td>{{ lot.available_spots() }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
             </div>
+            {% else %}
+            <div class="alert alert-info mb-0">No parking lots found.</div>
+            {% endif %}
         </div>
-        {% endfor %}
-    {% endif %}
+    </div>
 </div>
 {% endblock %}

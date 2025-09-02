@@ -264,7 +264,6 @@ def book_spot(lot_id):
             user_id=user.id,
             vehicle_number=vehicle_number,
             start_time=datetime.now(),
-            status ='Booked'
         )
         db.session.add(new_reservation)
         # Commit changes to the database    
@@ -327,3 +326,28 @@ def user_summary():
     }
     
     return render_template('user_summary.html', context=context)
+
+@app.route('/edit_profile', methods=['GET', 'POST'])
+def edit_profile():
+    if request.method == 'GET':
+        user_email = session.get('email', None)
+        user = User.query.filter_by(email=user_email).first()
+        return render_template('edit_profile.html', user=user)
+
+    if not user_email:
+        flash('You need to be logged in to update your profile.', 'danger')
+        return redirect(url_for('home'))
+    
+    if not user:
+        flash('User not found.', 'danger')
+        return redirect(url_for('home'))
+    
+    if request.method == 'POST':
+        user.name = request.form.get('name')
+        user.phone = request.form.get('phone')
+        new_password = request.form.get('password')
+        if new_password:
+            user.set_password(new_password)
+        db.session.commit()
+        flash('Profile updated successfully!', 'success')
+        return redirect(url_for('home'))

@@ -1,3 +1,15 @@
+body {
+    background: #f8f9fa;
+    font-family: 'Segoe UI', 'Roboto', Arial, sans-serif;
+}
+.card, .navbar, .modal-content {
+    border-radius: 1rem;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+}
+.btn-primary {
+    background: linear-gradient(90deg, #007bff 60%, #00c6ff 100%);
+    border: none;
+}
 .form-bg{
     background : #96d3e4;
     border-radius: 20px;

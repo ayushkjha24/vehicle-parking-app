@@ -1,121 +1,151 @@
-<div class="container-fluid mt-2 border-radius-3 p-5">
-    <h1 class="text-center">Recent Parking History</h1>
-    <div class="row">
-        <div class="col-md-12">
-            <table class="table table-striped border border-primary shadow-sm">
-                <thead>
-                    <tr>
-                        <th scope="col">ID</th>
-                        <th scope="col">Location</th>
-                        <th scope="col">Vehicle No.</th>
-                        <th scope="col">Time Stamp</th>
-                        <th scope="col">Action</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% if context['reservations'] %}
-                    {% for reservation in context['reservations'] %}
-                    <tr>
-                        <td>{{ reservation.id }}</td>
-                        <td>{{ reservation.location() }}</td>
-                        <td>{{ reservation.vehicle_number }}</td>
-                        {% if reservation.status == 'Occupied' %}
-                        <td>{{ reservation.get_start_time() }}</td>
-                        <td><button class="btn btn-danger" data-bs-toggle="modal"
-                                data-bs-target="#changeStatusModal{{ reservation.id }}">Occupied</button></td>
-                        {% elif reservation.status == 'Booked' %}
-                        <td>{{ reservation.get_start_time() }}</td>
-                        <td><button class="btn btn-warning" data-bs-toggle="modal"
-                                data-bs-target="#changeStatusModal{{ reservation.id }}">Booked</button></td>
-                        {% else %}
-                        <td>{{ reservation.get_end_time() }}</td>
-                        <td><button class="btn btn-success">Parked Out</button> </td>
-                        {% endif %}
-                    </tr>
-                    <div class="modal fade" id="changeStatusModal{{ reservation.id }}" tabindex="-1"
-                        aria-labelledby="changeStatusModalLabel{{ reservation.id }}" aria-hidden="true">
-                        <div class="modal-dialog">
-                            <div class="modal-content">
-                                <form method="POST"
-                                    action="{{ url_for('change_status', reservation_id=reservation.id) }}">
-                                    <div class="modal-header">
-                                        <h5 class="modal-title" id="changeStatusModalLabel{{ reservation.id }}">Change
-                                            Spot Status</h5>
-                                        <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                            aria-label="Close"></button>
-                                    </div>
-                                    <div class="modal-body">
-                                        <div class="mb-3">
-                                            <label for="spotStatus{{ reservation.id }}" class="form-label">Spot
-                                                Status</label>
-                                            <select class="form-select" id="spotStatus{{ reservation.id }}"
-                                                name="status" required>
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-11">
+            <div class="card shadow-lg border-0 rounded-4 p-4 bg-white">
+                <h2 class="mb-4 text-center fw-bold text-gradient">
+                    <i class="fas fa-history me-2"></i>Recent Parking History
+                </h2>
+                <div class="table-responsive">
+                    <table class="table table-bordered table-hover align-middle rounded-3 overflow-hidden">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>ID</th>
+                                <th>Location</th>
+                                <th>Vehicle No.</th>
+                                <th>Time Stamp</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% if context['reservations'] %}
+                            {% for reservation in context['reservations'] %}
+                            <tr>
+                                <td>{{ reservation.id }}</td>
+                                <td>{{ reservation.location() }}</td>
+                                <td>{{ reservation.vehicle_number }}</td>
+                                {% if reservation.status == 'Occupied' %}
+                                <td>{{ reservation.get_start_time() }}</td>
+                                <td>
+                                    <button class="btn btn-danger rounded-pill px-3" data-bs-toggle="modal"
+                                        data-bs-target="#changeStatusModal{{ reservation.id }}">
+                                        <i class="fas fa-car-crash me-1"></i>Occupied
+                                    </button>
+                                </td>
+                                {% elif reservation.status == 'Booked' %}
+                                <td>{{ reservation.get_start_time() }}</td>
+                                <td>
+                                    <button class="btn btn-warning rounded-pill px-3" data-bs-toggle="modal"
+                                        data-bs-target="#changeStatusModal{{ reservation.id }}">
+                                        <i class="fas fa-ticket-alt me-1"></i>Booked
+                                    </button>
+                                </td>
+                                {% else %}
+                                <td>{{ reservation.get_end_time() }}</td>
+                                <td>
+                                    <button class="btn btn-success rounded-pill px-3" disabled>
+                                        <i class="fas fa-check-circle me-1"></i>Parked Out
+                                    </button>
+                                </td>
+                                {% endif %}
+                            </tr>
+                            <!-- Modal for changing status -->
+                            <div class="modal fade" id="changeStatusModal{{ reservation.id }}" tabindex="-1"
+                                aria-labelledby="changeStatusModalLabel{{ reservation.id }}" aria-hidden="true">
+                                <div class="modal-dialog">
+                                    <div class="modal-content rounded-4">
+                                        <form method="POST"
+                                            action="{{ url_for('change_status', reservation_id=reservation.id) }}">
+                                            <div class="modal-header bg-primary text-white rounded-top-4">
+                                                <h5 class="modal-title" id="changeStatusModalLabel{{ reservation.id }}">
+                                                    <i class="fas fa-exchange-alt me-2"></i>Change Spot Status
+                                                </h5>
+                                                <button type="button" class="btn-close btn-close-white"
+                                                    data-bs-dismiss="modal" aria-label="Close"></button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <div class="mb-3">
+                                                    <label for="spotStatus{{ reservation.id }}" class="form-label">Spot Status</label>
+                                                    <select class="form-select" id="spotStatus{{ reservation.id }}"
+                                                        name="status" required>
+                                                        {% if reservation.get_spot_status() == 'B' %}
+                                                        <option value="B">Booked</option>
+                                                        <option value="O">Occupied</option>
+                                                        {% else %}
+                                                        <option value="O">Occupied</option>
+                                                        <option value="A">Available</option>
+                                                        {% endif %}
+                                                    </select>
+                                                </div>
+                                                <div class="mb-3">
+                                                    <label for="spotId{{ reservation.id }}" class="form-label">Spot Id</label>
+                                                    <input type="text" class="form-control" id="spotId{{ reservation.id }}"
+                                                        name="spot_id" value="{{ reservation.spot_id }}" readonly>
+                                                </div>
+                                                <div class="mb-3">
+                                                    <label for="VehicleNo{{ reservation.id }}" class="form-label">Vehicle No.</label>
+                                                    <input type="text" class="form-control" id="VehicleNo{{ reservation.id }}"
+                                                        name="vehicle_number" value="{{ reservation.vehicle_number }}" readonly>
+                                                </div>
                                                 {% if reservation.get_spot_status() == 'B' %}
-                                                <option value="B">Booked</option>
-                                                <option value="O">Occupied</option>
+                                                <div class="mb-3">
+                                                    <label for="startTime{{ reservation.id }}" class="form-label">Parking Time</label>
+                                                    <input type="text" class="form-control" id="startTime{{ reservation.id }}"
+                                                        name="parking_time" value="{{ context.dateTime }}" readonly>
+                                                </div>
                                                 {% else %}
-                                                <option value="O">Occupied</option>
-                                                <option value="A">Available</option>
+                                                <div class="mb-3">
+                                                    <label for="parkingTime{{ reservation.id }}" class="form-label">Parking Time</label>
+                                                    <input type="text" class="form-control" id="parkingTime{{ reservation.id }}"
+                                                        name="parking_time" value="{{ reservation.get_start_time() }}" readonly>
+                                                </div>
+                                                <div class="mb-3">
+                                                    <label for="releaseTime{{ reservation.id }}" class="form-label">Releasing Time</label>
+                                                    <input type="text" class="form-control" id="releaseTime{{ reservation.id }}"
+                                                        name="release_time" value="{{ context.dateTime }}" readonly>
+                                                </div>
+                                                <div class="mb-3">
+                                                    <label for="totalCost{{ reservation.id }}" class="form-label">Total Cost</label>
+                                                    <input type="text" class="form-control" id="totalCost{{ reservation.id }}"
+                                                        name="total_cost" value="{{ reservation.estimated_cost() }}" readonly>
+                                                </div>
                                                 {% endif %}
-                                            </select>
-                                        </div>
-                                        <div class="mb-3">
-                                            <label for="spotId{{ reservation.id }}" class="form-label">Spot Id</label>
-                                            <input type="text" class="form-control" id="spotId{{ reservation.id }}"
-                                                name="spot_id" value="{{ reservation.spot_id }}" readonly>
-                                        </div>
-                                        <div class="mb-3">
-                                            <label for="VehicleNo{{ reservation.id }}" class="form-label">Vehicle
-                                                No.</label>
-                                            <input type="text" class="form-control" id="VehicleNo{{ reservation.id }}"
-                                                name="vehicle_number" value="{{ reservation.vehicle_number }}" readonly>
-                                        </div>
-                                        {% if reservation.get_spot_status() == 'B' %}
-                                        <div class="mb-3">
-                                            <label for="startTime{{ reservation.id }}" class="form-label">Parking
-                                                Time</label>
-                                            <input type="text" class="form-control" id="startTime{{ reservation.id }}"
-                                                name="parking_time" value="{{ context.dateTime }}" readonly>
-                                        </div>
-                                        {% else %}
-                                        <div class="mb-3">
-                                            <label for="spotId{{ reservation.id }}" class="form-label">Parking
-                                                Time</label>
-                                            <input type="text" class="form-control" id="spotId{{ reservation.id }}"
-                                                name="parking_time" value="{{ reservation.get_start_time() }}" readonly>
-                                        </div>
-                                        <div class="mb-3">
-                                            <label for="spotId{{ reservation.id }}" class="form-label">Releasing
-                                                Time</label>
-                                            <input type="text" class="form-control" id="spotId{{ reservation.id }}"
-                                                name="release_time" value="{{ context.dateTime }}" readonly>
-                                        </div>
-                                        <div class="mb-3">
-                                            <label for="spotId{{ reservation.id }}" class="form-label">Total
-                                                Cost</label>
-                                            <input type="text" class="form-control" id="spotId{{ reservation.id }}"
-                                                name="total_cost" value="{{ reservation.estimated_cost() }}" readonly>
-                                        </div>
-                                        {% endif %}
+                                            </div>
+                                            <div class="modal-footer rounded-bottom-4">
+                                                <button type="button" class="btn btn-outline-secondary"
+                                                    data-bs-dismiss="modal">Cancel</button>
+                                                {% if reservation.get_spot_status() == 'O' %}
+                                                <button type="submit" class="btn btn-danger">
+                                                    <i class="fas fa-sign-out-alt me-1"></i>Release
+                                                </button>
+                                                {% else %}
+                                                <button type="submit" class="btn btn-warning">
+                                                    <i class="fas fa-exchange-alt me-1"></i>Change status
+                                                </button>
+                                                {% endif %}
+                                            </div>
+                                        </form>
                                     </div>
-                                    <div class="modal-footer">
-                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-                                            Cancel
-                                        </button>
-                                        {% if reservation.get_spot_status() == 'O' %}
-                                        <button type="submit" class="btn btn-danger">Release</button>
-                                        {% else %}
-                                        <button type="submit" class="btn btn-warning">Change status</button>
-                                        {% endif %}
-                                    </div>
-                                </form>
+                                </div>
                             </div>
-                        </div>
-                    </div>
-                    {% endfor %}
-                    {% endif %}
-                </tbody>
-            </table>
+                            {% endfor %}
+                            {% else %}
+                            <tr>
+                                <td colspan="5" class="text-center text-muted py-4">
+                                    <i class="fas fa-info-circle me-2"></i>No parking history found.
+                                </td>
+                            </tr>
+                            {% endif %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
         </div>
     </div>
 </div>
+<style>
+.text-gradient {
+    background: linear-gradient(90deg, #007bff 60%, #00c6ff 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+</style>

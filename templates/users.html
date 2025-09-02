@@ -1,39 +1,39 @@
-{% extends 'base.html' %}
+{% extends "base.html" %}
 
 {% block content %}
-    <div class="container mt-5">
-        <h1 class="text-center mb-3">User Management</h1>
-        <div class="row">
-            <div class="col-md-12">
-                <table class="table table-striped">
-                    <thead>
+<div class="container py-4">
+    <h2 class="fw-bold mb-4"><i class="fas fa-users me-2"></i>All Users</h2>
+    <div class="card shadow-sm">
+        <div class="card-body">
+            {% if context.users %}
+            <div class="table-responsive">
+                <table class="table table-striped align-middle">
+                    <thead class="table-light">
                         <tr>
-                            <th>ID</th>
                             <th>Name</th>
                             <th>Email</th>
                             <th>Address</th>
                             <th>Pincode</th>
-                            <th>Actions</th>
+                            <th>Reservations</th>
                         </tr>
                     </thead>
                     <tbody>
-                        {% for user in context['users'] %}
+                        {% for user in context.users %}
                         <tr>
-                            <td>{{ user.id }}</td>
                             <td>{{ user.name }}</td>
                             <td>{{ user.email }}</td>
                             <td>{{ user.address }}</td>
                             <td>{{ user.pincode }}</td>
-                            <td>
-                                <!-- Add action buttons here -->
-                                <a href="#" class="btn btn-primary btn-sm">Edit</a>
-                                <a href="#" class="btn btn-danger btn-sm">Delete</a>
-                            </td>
+                            <td>{{ user.reservations|length }}</td>
                         </tr>
                         {% endfor %}
                     </tbody>
                 </table>
             </div>
+            {% else %}
+            <div class="alert alert-info mb-0">No users found.</div>
+            {% endif %}
         </div>
     </div>
+</div>
 {% endblock %}

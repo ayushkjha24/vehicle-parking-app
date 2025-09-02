@@ -1,86 +1,69 @@
-{% extends 'base.html' %}
+{% extends "base.html" %}
 {% block content %}
-<div class="container mt-5">
-    <h1 class="text-center mb-4">User Summary</h1>
-    <div class="row justify-content-center">
-        <div class="col-md-8">
-            <div class="card">
-                <div class="card-header">
-                    <h2 class="text-center">User Details</h2>
-                </div>
+<div class="container py-4">
+    <h2 class="fw-bold mb-4 text-center"><i class="fas fa-chart-bar me-2"></i>Your Parking Summary</h2>
+    <div class="row mb-4">
+        <div class="col-md-6 offset-md-3">
+            <div class="card text-center shadow-sm mb-3">
                 <div class="card-body">
-                    <p><strong>Name : </strong> {{ context.user.name }}</p>
-                    <p><strong>Email : </strong> {{ context.user.email }}</p>
-                    <p><strong>Address : </strong> {{ context.user.address }}</p>
-                    <p><strong>Pincode : </strong> {{ context.user.pincode }}</p>
+                    <h5 class="card-title"><i class="fas fa-ticket-alt me-2"></i>Total Reservations</h5>
+                    <p class="display-6 fw-bold">{{ context.total_reservations }}</p>
                 </div>
             </div>
         </div>
     </div>
-    <div class="row justify-content-center mt-4">
-        <div class="col-md-10">
-            <div class="card">
-                <div class="card-header">
-                    <h2 class="text-center">Reservations</h2>
-                </div>
-                <div class="card-body">
-                    {% if context.reservations %}
-                    <table class="table table-striped">
-                        <thead>
-                            <tr>
-                                <th>ID</th>
-                                <th>Location</th>
-                                <th>Vehicle No.</th>
-                                <th>Booking Time</th>
-                                <th>Release Time</th>
-                                <th>Total Cost</th>
-                                <th>Status</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for reservation in context.reservations %}
-                            <tr>
-                                <td>{{ reservation.id }}</td>
-                                <td>{{ reservation.location() }}</td>
-                                <td>{{ reservation.vehicle_number }}</td>
-                                <td>{{ reservation.get_start_time() }}</td>
-                                <td>{{ reservation.get_end_time() }}</td>
-                                <td>{{ reservation.estimated_cost() }}</td>
-                                <td>
-                                    {% if reservation.get_spot_status() == 'O' %}
-                                    Occupied
-                                    {% elif reservation.get_spot_status() == 'B' %}
-                                    Booked
-                                    {% else %}
-                                    Parked Out
-                                    {% endif %}
-                                </td>
-                            </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
-                    {% else %}
-                    <p class="text-center">No reservations found.</p>
-                    {% endif %}
-                </div>
+    <div class="card shadow-sm mb-4">
+        <div class="card-body">
+            <h5 class="card-title mb-3"><i class="fas fa-history me-2"></i>Reservation History</h5>
+            {% if context.reservations %}
+            <div class="table-responsive">
+                <table class="table table-striped align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Lot</th>
+                            <th>Spot</th>
+                            <th>Vehicle</th>
+                            <th>Status</th>
+                            <th>Start</th>
+                            <th>End</th>
+                            <th>Cost</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for r in context.reservations %}
+                        <tr>
+                            <td>{{ r.location() }}</td>
+                            <td>{{ r.spot_id }}</td>
+                            <td>{{ r.vehicle_number }}</td>
+                            <td>
+                                {% if r.status == 'Booked' %}
+                                    <span class="badge bg-warning text-dark">Booked</span>
+                                {% elif r.status == 'Occupied' %}
+                                    <span class="badge bg-primary">Occupied</span>
+                                {% elif r.status == 'Parked Out' %}
+                                    <span class="badge bg-success">Parked Out</span>
+                                {% else %}
+                                    <span class="badge bg-secondary">{{ r.status }}</span>
+                                {% endif %}
+                            </td>
+                            <td>{{ r.get_start_time() }}</td>
+                            <td>{{ r.get_end_time() }}</td>
+                            <td>
+                                {% if r.cost %}
+                                    ₹{{ r.cost }}
+                                {% else %}
+                                    -
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
             </div>
+            {% else %}
+            <div class="alert alert-info mb-0">No reservations found.</div>
+            {% endif %}
         </div>
     </div>
-    <div class="row justify-content-center mt-4">
-        <div class="col-md-8">
-            <div class="card">
-                <div class="card-header">
-                    <h2 class="text-center">Reservation Histogram</h2>
-                </div>
-                <div class="card-body text-center">
-                    {% if context.histogram_image %}
-                    <img src="/{{ context.histogram_image }}" alt="Reservation Histogram"
-                        class="img-fluid">
-                    {% else %}
-                    <p>No histogram available.</p>
-                    {% endif %}
-                </div>
-            </div>
-        </div>
 </div>
-{% endblock content %}
+{% endblock %}

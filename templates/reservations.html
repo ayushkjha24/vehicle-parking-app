@@ -1,39 +1,58 @@
-<div class="container mt-5">
-    <h1 class="text-center">All Parkings</h1>
-    <div class="row">
-        <div class="col-md-12">
-            <table class="table table-striped">
-                <thead>
-                    <tr>
-                        <th>Reservation ID</th>
-                        <th>User Name</th>
-                        <th>Vehicle Number</th>
-                        <th>Parking Spot</th>
-                        <th>Start Time</th>
-                        <th>End Time</th>
-                        <th>Duration (hours)</th>
-                        <th>Estimated Cost</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for reservation in context.Reservations %}
-                    <tr>
-                        <td>{{ reservation.id }}</td>
-                        <td>{{ reservation.user_id }}</td>
-                        <td>{{ reservation.vehicle_number }}</td>
-                        <td>{{ reservation.spot_id }}</td>
-                        <td>{{ reservation.start_time }}</td>
-                        <td>{{ reservation.end_time }}</td>
-                        <td>{{ reservation.get_duration() }}</td>
-                        <td>{{ reservation.estimated_cost() }}</td>
-                    </tr>
-                    {% else %}
-                    <tr>
-                        <td colspan="6">No reservations found.</td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
+{% extends "base.html" %}
+{% block content %}
+<div class="container py-4">
+    <h2 class="fw-bold mb-4"><i class="fas fa-history me-2"></i>Reservation History</h2>
+    <div class="card shadow-sm">
+        <div class="card-body">
+            {% if context.reservations %}
+            <div class="table-responsive">
+                <table class="table table-striped align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Lot</th>
+                            <th>Spot</th>
+                            <th>Vehicle</th>
+                            <th>Status</th>
+                            <th>Start</th>
+                            <th>End</th>
+                            <th>Cost</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for r in context.reservations %}
+                        <tr>
+                            <td>{{ r.location() }}</td>
+                            <td>{{ r.spot_id }}</td>
+                            <td>{{ r.vehicle_number }}</td>
+                            <td>
+                                {% if r.status == 'Booked' %}
+                                    <span class="badge bg-warning text-dark">Booked</span>
+                                {% elif r.status == 'Occupied' %}
+                                    <span class="badge bg-primary">Occupied</span>
+                                {% elif r.status == 'Parked Out' %}
+                                    <span class="badge bg-success">Parked Out</span>
+                                {% else %}
+                                    <span class="badge bg-secondary">{{ r.status }}</span>
+                                {% endif %}
+                            </td>
+                            <td>{{ r.get_start_time() }}</td>
+                            <td>{{ r.get_end_time() }}</td>
+                            <td>
+                                {% if r.cost %}
+                                    ₹{{ r.cost }}
+                                {% else %}
+                                    -
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="alert alert-info mb-0">No reservations found.</div>
+            {% endif %}
         </div>
     </div>
 </div>
+{% endblock %}
