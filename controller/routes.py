@@ -16,7 +16,7 @@ def home():
         user = User.query.filter_by(email=user_email).first()
         if user:
             user_name = user.name
-            reservations = Reservation.query.filter_by(user_id=user.id).order_by(Reservation.start_time.desc()) 
+            reservations = Reservation.query.filter_by(user_id=user.id).order_by(Reservation.start_time.desc()).all() 
     Reservations = Reservation.query.all()
     dateTime = datetime.now().strftime("%Y-%m-%d %H:%M")
     context = {
@@ -329,9 +329,10 @@ def user_summary():
 
 @app.route('/edit_profile', methods=['GET', 'POST'])
 def edit_profile():
+    user_email = session.get('email', None)
+    user = User.query.filter_by(email=user_email).first() if user_email else None
+
     if request.method == 'GET':
-        user_email = session.get('email', None)
-        user = User.query.filter_by(email=user_email).first()
         return render_template('edit_profile.html', user=user)
 
     if not user_email:
@@ -344,10 +345,8 @@ def edit_profile():
     
     if request.method == 'POST':
         user.name = request.form.get('name')
-        user.phone = request.form.get('phone')
-        new_password = request.form.get('password')
-        if new_password:
-            user.set_password(new_password)
+        user.address = request.form.get('address')
+        user.pincode = request.form.get('pincode')
         db.session.commit()
         flash('Profile updated successfully!', 'success')
         return redirect(url_for('home'))
